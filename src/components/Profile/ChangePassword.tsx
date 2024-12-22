@@ -8,10 +8,19 @@ interface Props {
 }
 
 const ChangePassword = ({close}: Props) => {
+    const oldPasswordLabel = 'Old password:';
+    const confirmPasswordLabel = 'Confirm password:';
+    const alertOldPassword = 'Old password is incorrect ';
+    const alertConfirmPassword = 'The new and confirmed password must be the same ';
+
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const {login} = useAppSelector(state => state.user);
+
+    const [oldPasswordText, setOldPasswordText] = useState(oldPasswordLabel);
+    const [confirmPasswordText, setConfirmPasswordText] = useState(confirmPasswordLabel);
+
     const token = useAppSelector(state => state.token);
     const dispatch = useAppDispatch();
 
@@ -19,32 +28,30 @@ const ChangePassword = ({close}: Props) => {
         setNewPassword('');
         setConfirmPassword('');
         setOldPassword('');
+        setOldPasswordText(oldPasswordLabel);
+        setConfirmPasswordText(confirmPasswordLabel);
     }
 
     const handleClickSave = () => {
         const inputOldPasswordToken = createToken(login, oldPassword);
-        let alertPassword = '';
+        let textLabel = '';
 
-        if (confirmPassword !== newPassword) {
-            alertPassword = 'New password and confirm new password are different';
-        }
+        textLabel = inputOldPasswordToken !== token ? alertOldPassword : oldPasswordLabel;
+        setOldPasswordText(textLabel);
 
-        if (inputOldPasswordToken !== token) {
-            alertPassword = 'Old password is incorrect';
-        }
+        textLabel = confirmPassword !== newPassword ? alertConfirmPassword : confirmPasswordLabel;
+        setConfirmPasswordText(textLabel);
 
-        if (alertPassword) {
-            alert(alertPassword);
-        } else {
+        if (inputOldPasswordToken === token && confirmPassword === newPassword) {
             dispatch(changePassword(newPassword));
+            close();
         }
 
-        close();
     }
 
     return (
         <>
-            <label>Old password:
+            <label>{oldPasswordText}
                 <input
                     onChange={(e) => setOldPassword(e.target.value)}
                     value={oldPassword}
@@ -56,7 +63,7 @@ const ChangePassword = ({close}: Props) => {
                     value={newPassword}
                     type='password'/>
             </label>
-            <label>Confirm password:
+            <label>{confirmPasswordText}
                 <input
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     value={confirmPassword}
