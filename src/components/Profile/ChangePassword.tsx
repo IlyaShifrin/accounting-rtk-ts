@@ -34,7 +34,7 @@ const ChangePassword = ({close}: Props) => {
 
     const handleClickSave = () => {
         const inputOldPasswordToken = createToken(login, oldPassword);
-        let textLabel = '';
+        let textLabel;
 
         textLabel = inputOldPasswordToken !== token ? alertOldPassword : oldPasswordLabel;
         setOldPasswordText(textLabel);
